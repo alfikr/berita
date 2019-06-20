@@ -1,5 +1,6 @@
 package id.eiris.newsservice;
 
+import org.jsoup.Jsoup;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,15 @@ public class NewsServiceApplicationTests {
 			Element el = (Element)nodeList.item(i);
 			System.out.println(el.getElementsByTagName("title").item(0).getTextContent());
 		}
-
+	}
+	@Test
+	public void removeTagTest(){
+		String html = "<p>Orang yang menelpon balik, pulsanya akan membengkak. Tagihan inilah yang kemudian akan masuk ke kantong penipu tersebut. Hati-hati jika Anda mendapat &#8220;Missed Call&#8221; dari Luar Negeri. Nomer telepon +237222258673 dari Kamerun. Kemudian +237222258671, +237222258252, +237222258252, +237222258233 dan +23722258186. Ada juga dari Kasai-Oriental/Kasai-Occidental nomer +237222258186, +234300035. Seorang coach Densus Digital memperingatkan, &#8220;missed call&#8221; misterius itu lagi [&#8230;]</p>\\n<p>The post <a rel=\\\"nofollow\\\" href=\\\"http://antaranews.id/1081/\\\"";
+		org.jsoup.nodes.Document doc = Jsoup.parse(html);
+		doc.select("a").remove();
+		System.out.println("val: "+doc.val());
+		System.out.println("text: "+doc.text());
+		System.out.println(doc.data());
 	}
 
 }

@@ -1,6 +1,7 @@
 package id.eiris.newsservice.service;
 
 import id.eiris.newsservice.domain.Berita;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
@@ -34,6 +35,9 @@ public class NewsService {
         b.setPermalink(el.getElementsByTagName("guid").item(0).getTextContent());
         b.setShortContent(el.getElementsByTagName("description").item(0).getTextContent());
         b.setKonten(el.getElementsByTagName("content:encoded").item(0).getTextContent());
+        org.jsoup.nodes.Document doc = Jsoup.parse(b.getShortContent());
+        doc.select("a").remove();
+        b.setShortContent(doc.text());
         return b;
     }
     public List<Berita> antaraNews() throws URISyntaxException, ParserConfigurationException, IOException, SAXException {

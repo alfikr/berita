@@ -5,10 +5,7 @@ import com.sun.jndi.ldap.Ber;
 import id.eiris.newsservice.domain.Berita;
 import id.eiris.newsservice.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.xml.sax.SAXException;
 import reactor.core.publisher.Flux;
 
@@ -23,10 +20,12 @@ public class NewsResource {
     @Autowired
     private NewsService newsService;
     @GetMapping("/antara")
+    @CrossOrigin(origins = "*",methods = {RequestMethod.GET,RequestMethod.PUT,RequestMethod.OPTIONS,}, maxAge = 3600)
     public Flux<Berita> getBeritaAntara() throws ParserConfigurationException, IOException, SAXException, URISyntaxException {
         List<Berita> beritaList= newsService.antaraNews();
         return Flux.fromIterable(beritaList);
     }
+    @CrossOrigin
     @GetMapping({"","/"})
     public Flux<Berita> getBerita(@PathVariable(name = "rss") String rss) throws ParserConfigurationException, IOException, SAXException, URISyntaxException {
         List<Berita> beritas = newsService.getBerita(rss);

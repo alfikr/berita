@@ -1,6 +1,7 @@
 package id.eiris.newsservice;
 
 import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,8 @@ public class NewsServiceApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_RSS_XML));
 		HttpEntity<String> entity = new HttpEntity<String>("paramenters",headers);
-		ResponseEntity<String> res = restTemplate.exchange(new URI("http://antaranews.id/feed"), HttpMethod.GET,entity,String.class);
+		ResponseEntity<String> res=restTemplate.getForEntity(new URI("https://www.antaranews.com/rss/nas.xml"),String.class);
+		//ResponseEntity<String> res = restTemplate.exchange(new URI("https://www.antaranews.com/rss/nas.xml"), HttpMethod.GET,entity,String.class);
 		String response = res.getBody();
 		testParse(response);
 	}
@@ -43,11 +45,28 @@ public class NewsServiceApplicationTests {
 		is.setCharacterStream(new StringReader(res));
 		Document doc = builder.parse(is);
 		doc.getDocumentElement().normalize();
-		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 		NodeList nodeList=doc.getElementsByTagName("item");
 		for (int i=0;i<nodeList.getLength();i++){
 			Element el = (Element)nodeList.item(i);
-			System.out.println(el.getElementsByTagName("title").item(0).getTextContent());
+			String link = el.getElementsByTagName("link").item(0).getTextContent();
+			//System.out.println(el.getElementsByTagName("title").item(0).getTextContent());
+			try {
+				ResponseEntity<String> isi = restTemplate.getForEntity(new URI(link),String.class);
+				org.jsoup.nodes.Document dc = Jsoup.parse(isi.getBody());
+				org.jsoup.nodes.Document ds=dc.normalise();
+				org.jsoup.select.Elements article =ds.getElementsByTag("article");
+				int j=0;
+				article.forEach((org.jsoup.nodes.Element x)->{
+					if(x.hasClass("post-wrapper")){
+						org.jsoup.select.Elements head = x.getElementsByTag("header");
+						Elements div = x.getElementsByTag("div");
+						System.out.println(head.get(0).html());
+						System.out.println(div.get(0).html());
+					}
+				});
+			}catch (URISyntaxException e){
+				e.printStackTrace(System.err);
+			}
 		}
 	}
 	@Test

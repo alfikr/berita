@@ -1,7 +1,6 @@
 package id.eiris.newsservice.web.rest;
 
 
-import com.sun.jndi.ldap.Ber;
 import id.eiris.newsservice.domain.Berita;
 import id.eiris.newsservice.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,16 @@ public class NewsResource {
         List<Berita> beritaList= newsService.antaraNews();
         return Flux.fromIterable(beritaList);
     }
-    @CrossOrigin
-    @GetMapping({"","/"})
+    @GetMapping("/detik/nasional")
+    @CrossOrigin(origins = "*",methods = {RequestMethod.GET,RequestMethod.PUT,RequestMethod.OPTIONS,}, maxAge = 3600)
+    public Flux<Berita> getBeritaDetikNasional() throws ParserConfigurationException, IOException, SAXException, URISyntaxException {
+        List<Berita> beritaList= newsService.detikNasional();
+        return Flux.fromIterable(beritaList);
+    }
+    @CrossOrigin(origins="*", methods={RequestMethod.GET})
+    @GetMapping({"?{rss}","/?{rss}"})
     public Flux<Berita> getBerita(@PathVariable(name = "rss") String rss) throws ParserConfigurationException, IOException, SAXException, URISyntaxException {
+        System.out.println(rss);
         List<Berita> beritas = newsService.getBerita(rss);
         return Flux.fromIterable(beritas);
     }

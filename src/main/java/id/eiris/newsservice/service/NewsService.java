@@ -41,7 +41,7 @@ public class NewsService {
         return b;
     }
     public List<Berita> antaraNews() throws URISyntaxException, ParserConfigurationException, IOException, SAXException {
-        return getBerita("http://antaranews.id/feed");
+        return getBerita("https://www.antaranews.com/rss/nas.xml");
     }
     public List<Berita> detikNasional ()  throws URISyntaxException, ParserConfigurationException, IOException, SAXException{
         return getBerita("http://rss.detik.com/index.php/detikcom_nasional");
@@ -49,11 +49,9 @@ public class NewsService {
     @Cacheable("beritaByUri")
     public List<Berita> getBerita(String uri) throws URISyntaxException, ParserConfigurationException, IOException, SAXException {
         List<Berita> beritas = new ArrayList<>();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_RSS_XML));
-        HttpEntity<String> entity = new HttpEntity<String>("paramenters",headers);
-        ResponseEntity<String> res = restTemplate.exchange(new URI(uri), HttpMethod.GET,entity,String.class);
+        ResponseEntity<String> res = restTemplate.getForEntity(new URI(uri),String.class);
         String response = res.getBody();
+        System.out.println(response);
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(response));
